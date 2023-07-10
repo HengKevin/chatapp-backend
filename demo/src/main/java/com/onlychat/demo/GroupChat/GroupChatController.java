@@ -36,6 +36,12 @@ public class GroupChatController {
         return new ResponseEntity<>(groupChatList, HttpStatus.OK);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<GroupChat>> getActiveGroups() {
+        List<GroupChat> groupChatList = groupChatService.getGroups();
+        return new ResponseEntity<>(groupChatList, HttpStatus.OK);
+    }
+
     @GetMapping("/{groupId}")
     public ResponseEntity<GroupChat> getGroupById(@PathVariable String groupId) {
         GroupChat groupchat = groupChatService.getGroupById(groupId);

@@ -16,7 +16,7 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name="email", unique=true)
+    @Column(name="username", unique=true)
     private String email;
 
     private String password;

@@ -1,9 +1,11 @@
 package com.onlychat.demo.GroupChat;
 
+import com.onlychat.demo.Dashboard.DashboardService;
 import com.onlychat.demo.User.User;
 import com.onlychat.demo.User.UserRespository;
 import com.onlychat.demo.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -23,6 +25,9 @@ public class GroupChatServiceImpl implements GroupChatService{
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private DashboardService dashboardService;
+
     @Override
     public GroupChat createGroup(String group_name, int given_time){
         GroupChat returnValue = new GroupChat();
@@ -39,6 +44,8 @@ public class GroupChatServiceImpl implements GroupChatService{
         returnValue.setSetTimeOut(set_time);
 
         group_chat_repo.save(returnValue);
+        dashboardService.addGroupChat((long) 1);
+        dashboardService.addUsers((long) 1);
         return returnValue;
     }
 
@@ -70,6 +77,7 @@ public class GroupChatServiceImpl implements GroupChatService{
                 result.put("groupChat", groupChat);
                 result.put("user", createdUser);
             }
+            dashboardService.addUsers((long) 1);
         }
         return result;
     }

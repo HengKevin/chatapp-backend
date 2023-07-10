@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AdminServiceImpl implements AdminService{
+public class AdminServiceImpl implements AdminService {
 
     @Autowired
     AdminRepository adminRepository;
@@ -17,11 +17,17 @@ public class AdminServiceImpl implements AdminService{
         Admin admin = adminRepository.findByEmail(email).orElse(null);
         if (admin == null) {
             return new LoginResponse(null, false);
+        } else {
+            if (admin.getPassword().equals(password)) {
+                return new LoginResponse(admin, true);
+            } else {
+                Admin user = new Admin();
+                user.setEmail(email);
+                user.setPassword(password);
+                return new LoginResponse(user, false);
+            }
         }
-        if (admin.getPassword().equals(password)) {
-            return new LoginResponse(admin, true);
-        }
-        return null;
+
     }
 
     @Override
@@ -33,5 +39,5 @@ public class AdminServiceImpl implements AdminService{
         adminRepository.save(admin);
         return admin;
     }
-    
+
 }
