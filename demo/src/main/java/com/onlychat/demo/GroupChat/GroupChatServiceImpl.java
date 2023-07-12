@@ -6,6 +6,7 @@ import com.onlychat.demo.User.UserRespository;
 import com.onlychat.demo.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -15,8 +16,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map;
 import java.util.Date;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 @Service
 public class GroupChatServiceImpl implements GroupChatService{
+    private final SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    public GroupChatServiceImpl(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
     @Autowired
     GroupChatRespository group_chat_repo;
 
@@ -64,7 +71,7 @@ public class GroupChatServiceImpl implements GroupChatService{
     public Map<String, Object> addToGroupById(String groupId, String userId) {
         GroupChat groupChat = group_chat_repo.findById(groupId).orElse(null);
         Map<String, Object> result = new HashMap<>();
-
+        Map<String, Object> data = new HashMap<>();
         if (groupChat != null) {
             User user = user_repo.findById(userId).orElse(null);
             if (user != null && groupChat.containsUser(user)) {
@@ -77,9 +84,11 @@ public class GroupChatServiceImpl implements GroupChatService{
                 result.put("Message","Added User to group");
                 result.put("groupChat", groupChat);
                 result.put("user", createdUser);
+                data.put("groupof", groupChat.getUserCount());
             }
             dashboardService.addUsers((long) 1);
         }
+        messagingTemplate.convertAndSend("/topic/group/" + groupId, data);
         return result;
     }
 
