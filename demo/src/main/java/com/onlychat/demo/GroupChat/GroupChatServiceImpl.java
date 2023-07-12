@@ -7,7 +7,8 @@ import com.onlychat.demo.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -85,21 +86,36 @@ public class GroupChatServiceImpl implements GroupChatService{
 
     @Override
     public GroupChat deleteGroupById(String groupId) {
-        GroupChat groupChat = group_chat_repo.findById(groupId).orElse(null);
-        if (groupChat != null) {
-            Set<User> users = new HashSet<>(groupChat.getParticipants());
-            for (User user : users) {
-                user.getGroupChats().remove(groupChat);
+        Timer timer = new Timer();
+        final GroupChat[] result = {null};
+        
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                GroupChat groupChat = group_chat_repo.findById(groupId).orElse(null);
+                if (groupChat != null) {
+                    Set<User> users = new HashSet<>(groupChat.getParticipants());
+                    for (User user : users) {
+                        user.getGroupChats().remove(groupChat);
+                    }
+                    groupChat.getParticipants().clear();
+                    group_chat_repo.save(groupChat);
+                    group_chat_repo.deleteById(groupId);
+                    for (User user : users) {
+                        userService.deleteUserById(user.getId());
+                    }
+                    result[0] = groupChat; 
+                }
             }
-            groupChat.getParticipants().clear();
-            group_chat_repo.save(groupChat);
-            group_chat_repo.deleteById(groupId);
-            for (User user : users) {
-                userService.deleteUserById(user.getId());
-            }
-            return groupChat;
+        }, 60000);
+
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        return null;
+    
+        return result[0];
     }
 
 
