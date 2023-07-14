@@ -6,6 +6,7 @@ import com.onlychat.demo.User.User;
 import jakarta.persistence.*;
 
 import java.beans.ConstructorProperties;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +19,7 @@ public class GroupChat {
     private String id;
     private String name;
     private String hostId;
+    private LocalDateTime created_at;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_activity_time")
@@ -95,6 +97,7 @@ public class GroupChat {
         this.participants = new HashSet<>();
         this.chats = new HashSet<>();
         this.lastActivityTime = new Date();
+        this.created_at = LocalDateTime.now();
     }
 
     public void addParticipant(User user) {
