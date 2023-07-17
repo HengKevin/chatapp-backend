@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
+import java.time.LocalDateTime;
 import java.util.Date;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 @Service
@@ -50,6 +51,7 @@ public class GroupChatServiceImpl implements GroupChatService{
             set_time = new Date(current_time.getTime() + (given_time * 1000)); // Multiply by 1000 to convert seconds to milliseconds
         }
         returnValue.setSetTimeOut(set_time);
+        returnValue.setCreated_at(LocalDateTime.now());
 
         group_chat_repo.save(returnValue);
         dashboardService.addGroupChat((long) 1);
