@@ -9,5 +9,5 @@ public interface GroupChatService {
     GroupChat getGroupById(String groupId);
     Map<String, Object> addToGroupById(String groupId, String userId);
     GroupChat deleteGroupById(String groupId);
-
+    String getGroupStatusById(String groupId);
 }

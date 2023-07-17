@@ -123,10 +123,23 @@ public class GroupChatServiceImpl implements GroupChatService{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    
+        Map<String, Object> data = new HashMap<>();
+        data.put("status", "deleted");
+        messagingTemplate.convertAndSend("/topic/group/" + groupId, data);
         return result[0];
     }
 
+    @Override
+    public String getGroupStatusById(String groupId) {
+        GroupChat groupChat = group_chat_repo.findById(groupId).orElse(null);
+        Map<String, Object> data = new HashMap<>();
+        if (groupChat == null) {
+            return null;
+        }
+        data.put("status", "inactive");
+        messagingTemplate.convertAndSend("/topic/group/" + groupId, data);
+        return data.toString();
+    }
 
 
 

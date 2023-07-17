@@ -74,4 +74,14 @@ public class GroupChatController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/{groupId}/status")
+    public ResponseEntity<String> getGroupStatusById(@PathVariable String groupId) {
+        String result = groupChatService.getGroupStatusById(groupId);
+        if (result != null) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
